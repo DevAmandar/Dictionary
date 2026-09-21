@@ -1,10 +1,16 @@
 // app.js
 
+// ============================================
+// 🔧 آدرس Cloudflare Worker
+// ============================================
+const TTS_PROXY_URL = "https://dictionary.m-amandar-dev.workers.dev";
+// ============================================
+
 // --- State ---
 let words = JSON.parse(localStorage.getItem("dic_words") || "[]");
 let settings = JSON.parse(localStorage.getItem("dic_settings") || '{"voiceType": "google", "voiceSpeed": "0.8"}');
-let expandedWordIndex = null; // کلمه‌ای که بخش جمله‌هایش باز است
-let currentSentenceParentIndex = null; // شاخص کلمه‌ای که می‌خواهیم به آن جمله اضافه کنیم
+let expandedWordIndex = null;
+let currentSentenceParentIndex = null;
 
 // --- DOM Elements ---
 const wordInput = document.getElementById("wordInput");
@@ -48,32 +54,99 @@ function save() {
   localStorage.setItem("dic_settings", JSON.stringify(settings));
 }
 
-// --- Text-to-Speech ---
+// --- Text-to-Speech (روتر اصلی) ---
 function speakWord(text, lang = 'en') {
   const type = voiceType.value;
   const speed = parseFloat(voiceSpeed.value);
-  
+
+  // اگه زبان فارسی بود، StreamElements پشتیبانی نمی‌کنه → مستقیم سیستم
+  if (lang === 'fa') {
+    speakWithSystem(text, lang, speed);
+    return;
+  }
+
   if (type === 'system') {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang === 'en' ? 'en-US' : 'fa-IR';
-      utterance.rate = speed;
-      utterance.pitch = 1;
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('مرورگر شما از صدای سیستم پشتیبانی نمی‌کند');
-    }
+    speakWithSystem(text, lang, speed);
   } else {
-    const audio = new Audio();
-    const googleLang = lang === 'en' ? 'en' : 'fa';
-    audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${googleLang}&q=${encodeURIComponent(text)}`;
+    speakWithGoogle(text, lang, speed);
+  }
+}
+
+// --- Web Speech API (آفلاین) ---
+function speakWithSystem(text, lang, speed) {
+  if (!('speechSynthesis' in window)) {
+    alert('مرورگر شما از صدای سیستم پشتیبانی نمی‌کند');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  // انتخاب بهترین صدای موجود
+  const voices = window.speechSynthesis.getVoices();
+  const targetLangPrefix = lang === 'en' ? 'en' : 'fa';
+  const preferred = voices.find(v =>
+    v.lang.startsWith(targetLangPrefix) &&
+    (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium'))
+  ) || voices.find(v => v.lang.startsWith(targetLangPrefix));
+
+  if (preferred) {
+    utterance.voice = preferred;
+  }
+
+  utterance.lang = lang === 'en' ? 'en-US' : 'fa-IR';
+  utterance.rate = speed;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+// --- Google TTS از طریق Cloudflare Worker ---
+function speakWithGoogle(text, lang, speed) {
+  const googleLang = lang === 'en' ? 'en' : 'fa';
+  const url = `${TTS_PROXY_URL}/?text=${encodeURIComponent(text)}&lang=${googleLang}`;
+
+  const audio = new Audio();
+  audio.crossOrigin = 'anonymous';
+  audio.preload = 'auto';
+  audio.src = url;
+
+  let hasPlayed = false;
+  let hasFailed = false;
+
+  const tryPlay = () => {
+    if (hasPlayed || hasFailed) return;
+    hasPlayed = true;
     audio.playbackRate = speed;
     audio.play().catch(err => {
-      console.error('خطا در پخش صدا:', err);
-      alert('خطا در پخش صدا. اینترنت را بررسی کنید.');
+      if (hasFailed) return;
+      hasFailed = true;
+      console.warn('❌ Google TTS play خطا، fallback به سیستم:', err);
+      speakWithSystem(text, lang, speed);
     });
-  }
+  };
+
+  audio.addEventListener('canplaythrough', tryPlay, { once: true });
+
+  const timeoutId = setTimeout(() => {
+    if (hasPlayed || hasFailed) return;
+    hasFailed = true;
+    console.warn('⏱️ Google TTS timeout، fallback به سیستم');
+    speakWithSystem(text, lang, speed);
+  }, 4000);
+
+  audio.addEventListener('playing', () => {
+    clearTimeout(timeoutId);
+  }, { once: true });
+
+  audio.addEventListener('error', (e) => {
+    if (hasPlayed || hasFailed) return;
+    hasFailed = true;
+    clearTimeout(timeoutId);
+    console.warn('❌ Google TTS error event:', e);
+    speakWithSystem(text, lang, speed);
+  }, { once: true });
+
+  audio.load();
 }
 
 // --- Voice Settings ---
@@ -81,14 +154,19 @@ testVoiceBtn.onclick = () => speakWord('Hello world', 'en');
 voiceType.onchange = () => { settings.voiceType = voiceType.value; save(); };
 voiceSpeed.onchange = () => { settings.voiceSpeed = voiceSpeed.value; save(); };
 
+// بارگذاری اولیه صداهای سیستم
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
 // --- Update Counters ---
 function updateCounters() {
   const total = words.length;
   const starred = words.filter(w => w.starred).length;
-  
+
   wordCount.textContent = `${total} کلمه`;
   starredCount.textContent = starred;
-  
+
   if (total === 0) {
     emptyState.classList.add('visible');
     listContainer.style.display = 'none';
@@ -120,10 +198,8 @@ function toggleSentenceMeaning(wordIndex, sentenceIndex) {
 
 function toggleSentencesContainer(index) {
   if (expandedWordIndex === index) {
-    // بستن بخش جمله‌ها
     expandedWordIndex = null;
   } else {
-    // باز کردن بخش جمله‌ها
     expandedWordIndex = index;
   }
   updateWordCard(index);
@@ -157,11 +233,11 @@ function createWordCard(item, index) {
   const card = document.createElement("div");
   card.className = "word-card" + (item.starred ? " starred" : "");
   card.setAttribute('data-index', index);
-  
+
   // --- بخش اصلی کلمه ---
   const wordMain = document.createElement("div");
   wordMain.className = "word-main";
-  
+
   // ستاره
   const starBtn = document.createElement("button");
   starBtn.className = "btn-icon star-btn";
@@ -171,7 +247,7 @@ function createWordCard(item, index) {
     e.stopPropagation();
     toggleStar(index);
   };
-  
+
   // تلفظ کلمه
   const speakBtn = document.createElement("button");
   speakBtn.className = "btn-icon speak-btn";
@@ -181,12 +257,12 @@ function createWordCard(item, index) {
     e.stopPropagation();
     speakWord(item.word, 'en');
   };
-  
+
   // متن کلمه
   const wordText = document.createElement("span");
   wordText.className = "word-text";
   wordText.textContent = item.word;
-  
+
   // متن ترجمه
   const meaningText = document.createElement("span");
   meaningText.className = "meaning-text" + (item.showMeaning ? "" : " hidden");
@@ -196,7 +272,7 @@ function createWordCard(item, index) {
     e.stopPropagation();
     toggleMeaning(index);
   };
-  
+
   // نشانگر جمله
   const hasSentences = item.sentences && item.sentences.length > 0;
   const sentenceBadge = document.createElement("span");
@@ -207,7 +283,7 @@ function createWordCard(item, index) {
     e.stopPropagation();
     toggleSentencesContainer(index);
   };
-  
+
   // دکمه باز/بسته کردن جمله‌ها
   const expandBtn = document.createElement("button");
   expandBtn.className = "btn-icon expand-btn" + (expandedWordIndex === index ? " expanded" : "");
@@ -217,7 +293,7 @@ function createWordCard(item, index) {
     e.stopPropagation();
     toggleSentencesContainer(index);
   };
-  
+
   // حذف کلمه
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "btn-icon delete-btn";
@@ -227,7 +303,7 @@ function createWordCard(item, index) {
     e.stopPropagation();
     deleteWord(index);
   };
-  
+
   // گروه دکمه‌ها
   const actions = document.createElement("div");
   actions.className = "word-actions";
@@ -235,26 +311,26 @@ function createWordCard(item, index) {
   actions.appendChild(speakBtn);
   actions.appendChild(expandBtn);
   actions.appendChild(deleteBtn);
-  
+
   wordMain.appendChild(wordText);
   wordMain.appendChild(meaningText);
   wordMain.appendChild(sentenceBadge);
   wordMain.appendChild(actions);
-  
+
   card.appendChild(wordMain);
-  
+
   // --- بخش جمله‌ها (زیرمجموعه) ---
   const sentencesContainer = document.createElement("div");
   sentencesContainer.className = "sentences-container" + (expandedWordIndex === index ? " open" : "");
-  
+
   // هدر بخش جمله‌ها
   const sentencesHeader = document.createElement("div");
   sentencesHeader.className = "sentences-header";
-  
+
   const sentencesTitle = document.createElement("span");
   sentencesTitle.className = "sentences-title";
   sentencesTitle.textContent = "📝 جمله‌ها";
-  
+
   const addSentenceBtn = document.createElement("button");
   addSentenceBtn.className = "btn-add-sentence";
   addSentenceBtn.textContent = "➕ افزودن جمله";
@@ -262,11 +338,11 @@ function createWordCard(item, index) {
     e.stopPropagation();
     openSentenceModal(index);
   };
-  
+
   sentencesHeader.appendChild(sentencesTitle);
   sentencesHeader.appendChild(addSentenceBtn);
   sentencesContainer.appendChild(sentencesHeader);
-  
+
   // لیست جمله‌ها
   if (hasSentences) {
     item.sentences.forEach((sentence, sIndex) => {
@@ -278,9 +354,9 @@ function createWordCard(item, index) {
     noSentences.textContent = "هنوز جمله‌ای اضافه نشده است";
     sentencesContainer.appendChild(noSentences);
   }
-  
+
   card.appendChild(sentencesContainer);
-  
+
   return card;
 }
 
@@ -288,12 +364,12 @@ function createWordCard(item, index) {
 function createSentenceItem(wordItem, sentence, wordIndex, sentenceIndex) {
   const sentenceItem = document.createElement("div");
   sentenceItem.className = "sentence-item";
-  
+
   // متن جمله
   const sentenceText = document.createElement("span");
   sentenceText.className = "sentence-text";
   sentenceText.textContent = sentence.text;
-  
+
   // ترجمه جمله
   const sentenceMeaning = document.createElement("span");
   sentenceMeaning.className = "sentence-meaning" + (sentence.showMeaning ? "" : " hidden");
@@ -303,11 +379,11 @@ function createSentenceItem(wordItem, sentence, wordIndex, sentenceIndex) {
     e.stopPropagation();
     toggleSentenceMeaning(wordIndex, sentenceIndex);
   };
-  
+
   // دکمه‌های عملیات جمله
   const sentenceActions = document.createElement("div");
   sentenceActions.className = "sentence-actions";
-  
+
   // تلفظ جمله
   const speakSentenceBtn = document.createElement("button");
   speakSentenceBtn.className = "btn-icon-sm speak-btn";
@@ -317,7 +393,7 @@ function createSentenceItem(wordItem, sentence, wordIndex, sentenceIndex) {
     e.stopPropagation();
     speakWord(sentence.text, 'en');
   };
-  
+
   // نمایش/پنهان ترجمه جمله
   const toggleSentenceMeaningBtn = document.createElement("button");
   toggleSentenceMeaningBtn.className = "btn-icon-sm toggle-btn";
@@ -327,7 +403,7 @@ function createSentenceItem(wordItem, sentence, wordIndex, sentenceIndex) {
     e.stopPropagation();
     toggleSentenceMeaning(wordIndex, sentenceIndex);
   };
-  
+
   // حذف جمله
   const deleteSentenceBtn = document.createElement("button");
   deleteSentenceBtn.className = "btn-icon-sm delete-btn";
@@ -337,15 +413,15 @@ function createSentenceItem(wordItem, sentence, wordIndex, sentenceIndex) {
     e.stopPropagation();
     deleteSentence(wordIndex, sentenceIndex);
   };
-  
+
   sentenceActions.appendChild(speakSentenceBtn);
   sentenceActions.appendChild(toggleSentenceMeaningBtn);
   sentenceActions.appendChild(deleteSentenceBtn);
-  
+
   sentenceItem.appendChild(sentenceText);
   sentenceItem.appendChild(sentenceMeaning);
   sentenceItem.appendChild(sentenceActions);
-  
+
   return sentenceItem;
 }
 
@@ -363,13 +439,13 @@ function updateWordCard(index) {
 function openSentenceModal(wordIndex) {
   currentSentenceParentIndex = wordIndex;
   const word = words[wordIndex];
-  
+
   modalTitle.textContent = `📖 افزودن جمله برای "${word.word}"`;
   modalWordDisplay.textContent = word.word;
   modalMeaningDisplay.textContent = word.meaning;
   sentenceInput.value = '';
   sentenceMeaningInput.value = '';
-  
+
   sentenceModal.style.display = "flex";
   sentenceInput.focus();
 }
@@ -382,23 +458,23 @@ function closeSentenceModalFunc() {
 saveSentence.onclick = () => {
   const text = sentenceInput.value.trim();
   const meaning = sentenceMeaningInput.value.trim();
-  
+
   if (!text || !meaning) {
     alert('لطفاً جمله و ترجمه آن را وارد کنید');
     return;
   }
-  
+
   if (currentSentenceParentIndex !== null) {
     if (!words[currentSentenceParentIndex].sentences) {
       words[currentSentenceParentIndex].sentences = [];
     }
-    
+
     words[currentSentenceParentIndex].sentences.push({
       text: text,
       meaning: meaning,
       showMeaning: false
     });
-    
+
     save();
     updateWordCard(currentSentenceParentIndex);
     closeSentenceModalFunc();
@@ -418,7 +494,7 @@ sentenceModal.addEventListener("click", (e) => {
 function openStarredModal() {
   const starredWords = words.filter(w => w.starred);
   starredList.innerHTML = '';
-  
+
   if (starredWords.length === 0) {
     starredList.innerHTML = '<div class="empty-state visible"><div class="empty-icon">⭐</div><h3>کلمه نشان‌داری وجود ندارد</h3><p>برای نشان‌دار کردن کلمات روی ستاره کنار آنها کلیک کنید</p></div>';
   } else {
@@ -427,13 +503,12 @@ function openStarredModal() {
       starredList.appendChild(createWordCard(item, originalIndex));
     });
   }
-  
+
   starredModal.style.display = "flex";
 }
 
 function closeStarredModalFunc() {
   starredModal.style.display = "none";
-  // بروزرسانی لیست اصلی بعد از بستن مودال
   renderAllWords();
 }
 
@@ -449,16 +524,16 @@ starredModal.addEventListener("click", (e) => {
 // --- Render All Words ---
 function renderAllWords() {
   listContainer.innerHTML = '';
-  
+
   if (words.length === 0) {
     updateCounters();
     return;
   }
-  
+
   words.forEach((item, index) => {
     listContainer.appendChild(createWordCard(item, index));
   });
-  
+
   updateCounters();
 }
 
@@ -466,12 +541,12 @@ function renderAllWords() {
 addBtn.onclick = () => {
   const w = wordInput.value.trim();
   const m = meaningInput.value.trim();
-  
+
   if (!w || !m) {
     alert('لطفاً کلمه و ترجمه را وارد کنید');
     return;
   }
-  
+
   const newWord = {
     word: w,
     meaning: m,
@@ -479,14 +554,14 @@ addBtn.onclick = () => {
     showMeaning: false,
     starred: false
   };
-  
+
   words.unshift(newWord);
   save();
-  
+
   wordInput.value = "";
   meaningInput.value = "";
   wordInput.focus();
-  
+
   renderAllWords();
 };
 
@@ -511,7 +586,7 @@ document.addEventListener("keydown", (e) => {
       closeStarredModalFunc();
     }
   }
-  
+
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
     exportWords();
@@ -544,11 +619,11 @@ importBtn.onclick = () => importInput.click();
 importInput.onchange = async () => {
   const file = importInput.files[0];
   if (!file) return;
-  
+
   try {
     const text = await file.text();
     const imported = JSON.parse(text);
-    
+
     if (Array.isArray(imported)) {
       words = imported.map(item => ({
         word: item.word || "",
@@ -561,7 +636,7 @@ importInput.onchange = async () => {
         showMeaning: item.showMeaning || false,
         starred: item.starred || false
       }));
-      
+
       save();
       expandedWordIndex = null;
       renderAllWords();
@@ -573,7 +648,7 @@ importInput.onchange = async () => {
     console.error("خطا در خواندن فایل:", err);
     alert('❌ خطا در خواندن فایل. لطفاً از فرمت JSON معتبر استفاده کنید');
   }
-  
+
   importInput.value = "";
 };
 
@@ -583,7 +658,7 @@ clearAllBtn.onclick = () => {
     alert('لیست قبلاً خالی است');
     return;
   }
-  
+
   if (confirm("⚠️ همه لغات حذف شوند؟ این عملیات قابل بازگشت نیست!")) {
     words = [];
     expandedWordIndex = null;
