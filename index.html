@@ -2,22 +2,28 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دیکشنری شخصی من</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="description" content="دیکشنری شخصی - ذخیره و مدیریت کلمات با تلفظ صوتی">
+    <title>📚 دیکشنری شخصی من</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <!-- هدر -->
         <header class="app-header">
-            <h1>📚 دیکشنری شخصی</h1>
-            <p class="subtitle">کلمات خود را ذخیره و مدیریت کنید</p>
+            <div class="header-icon">📚</div>
+            <h1>دیکشنری شخصی</h1>
+            <p class="subtitle">کلمات خود را ذخیره، تلفظ و مدیریت کنید</p>
         </header>
         
         <!-- بخش تنظیمات صدا -->
-        <div class="settings-bar">
+        <section class="settings-bar" aria-label="تنظیمات صدا">
             <div class="setting-item">
-                <label>🎙️ نوع صدا</label>
+                <label for="voiceType">
+                    <span class="label-icon">🎙️</span>
+                    <span>نوع صدا</span>
+                </label>
                 <select id="voiceType">
                     <option value="google">گوگل (آنلاین)</option>
                     <option value="system">سیستم (آفلاین)</option>
@@ -25,7 +31,10 @@
             </div>
             
             <div class="setting-item">
-                <label>⚡ سرعت</label>
+                <label for="voiceSpeed">
+                    <span class="label-icon">⚡</span>
+                    <span>سرعت</span>
+                </label>
                 <select id="voiceSpeed">
                     <option value="0.5">آهسته</option>
                     <option value="0.8" selected>معمولی</option>
@@ -33,19 +42,28 @@
                 </select>
             </div>
             
-            <button id="testVoice" class="btn-test">🔊 تست صدا</button>
-        </div>
+            <button id="testVoice" class="btn-test">
+                <span>🔊</span> تست صدا
+            </button>
+        </section>
         
         <!-- بخش افزودن کلمه جدید -->
-        <div class="add-word-section">
+        <section class="add-word-section">
             <div class="input-group">
-                <input type="text" id="wordInput" placeholder="کلمه جدید..." autocomplete="off">
-                <input type="text" id="meaningInput" placeholder="ترجمه..." autocomplete="off">
+                <div class="input-wrapper">
+                    <span class="input-icon">📝</span>
+                    <input type="text" id="wordInput" placeholder="کلمه جدید..." autocomplete="off">
+                </div>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔤</span>
+                    <input type="text" id="meaningInput" placeholder="ترجمه..." autocomplete="off">
+                </div>
                 <button id="addBtn" class="btn-add">
-                    <span>➕</span> افزودن
+                    <span>➕</span>
+                    <span>افزودن</span>
                 </button>
             </div>
-        </div>
+        </section>
         
         <!-- نوار ابزار -->
         <div class="toolbar">
@@ -53,13 +71,24 @@
                 <span class="word-count" id="wordCount">۰ کلمه</span>
             </div>
             <div class="toolbar-right">
-                <button id="showStarredBtn" class="btn-tool">
-                    ⭐ نشان‌دارها <span id="starredCount" class="badge">۰</span>
+                <button id="showStarredBtn" class="btn-tool btn-starred">
+                    <span>⭐</span>
+                    <span>نشان‌دارها</span>
+                    <span id="starredCount" class="badge">۰</span>
                 </button>
-                <button id="exportBtn" class="btn-tool">📥 خروجی</button>
-                <button id="importBtn" class="btn-tool">📤 ورودی</button>
+                <button id="exportBtn" class="btn-tool" title="دانلود فایل پشتیبان">
+                    <span>📥</span>
+                    <span class="btn-tool-text">خروجی</span>
+                </button>
+                <button id="importBtn" class="btn-tool" title="بارگذاری فایل پشتیبان">
+                    <span>📤</span>
+                    <span class="btn-tool-text">ورودی</span>
+                </button>
                 <input type="file" id="importInput" accept=".json" style="display: none;">
-                <button id="clearAllBtn" class="btn-tool btn-danger">🗑️ حذف همه</button>
+                <button id="clearAllBtn" class="btn-tool btn-danger" title="حذف همه کلمات">
+                    <span>🗑️</span>
+                    <span class="btn-tool-text">حذف همه</span>
+                </button>
             </div>
         </div>
         
@@ -73,15 +102,16 @@
             <div class="empty-icon">📝</div>
             <h3>هنوز کلمه‌ای اضافه نکرده‌اید</h3>
             <p>از بخش بالا کلمه و ترجمه آن را وارد کنید</p>
+            <p class="empty-hint">💡 نکته: بعد از افزودن، روی 🔒 کنار ترجمه بزنید تا مخفی بشه</p>
         </div>
     </div>
     
-    <!-- Modal افزودن/ویرایش جمله -->
+    <!-- Modal افزودن جمله -->
     <div id="sentenceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">📖 افزودن جمله برای کلمه</h2>
-                <button class="close-modal" id="closeSentenceModal">&times;</button>
+                <h2 id="modalTitle">📖 افزودن جمله</h2>
+                <button class="close-modal" id="closeSentenceModal" aria-label="بستن">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="detail-section">
@@ -117,7 +147,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>⭐ کلمات نشان‌دار شده</h2>
-                <button class="close-modal" id="closeStarredModal">&times;</button>
+                <button class="close-modal" id="closeStarredModal" aria-label="بستن">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="starredList"></div>

@@ -876,3 +876,387 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #b0b0b0;
 }
+/* ==================== بهبودهای ظاهری v2 ==================== */
+
+/* هدر با آیکون بزرگ */
+.app-header {
+  position: relative;
+}
+
+.header-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.app-header h1 {
+  font-size: 1.85rem;
+}
+
+/* تنظیمات - آیکون‌دار */
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label-icon {
+  font-size: 1rem;
+}
+
+/* input wrapper با آیکون */
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  right: 16px;
+  font-size: 1.1rem;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding-right: 48px !important;
+}
+
+/* دکمه‌های toolbar با آیکون */
+.btn-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-starred {
+  background: linear-gradient(135deg, #fff8e7, #fffbf0);
+  border-color: #f39c1230;
+}
+
+.btn-starred:hover {
+  background: var(--warning-bg);
+  border-color: var(--warning);
+}
+
+/* حالت خالی */
+.empty-hint {
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: var(--primary-bg);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+/* ==================== ریسپانسیو بهتر موبایل ==================== */
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    padding: 16px 14px;
+    border-radius: var(--radius);
+  }
+
+  .app-header {
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+  }
+
+  .header-icon {
+    font-size: 2.5rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.82rem;
+  }
+
+  /* تنظیمات - هر کدوم یه ردیف */
+  .settings-bar {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .setting-item label {
+    flex-shrink: 0;
+  }
+
+  .setting-item select {
+    min-width: 120px;
+    font-size: 0.82rem;
+    padding: 7px 10px;
+  }
+
+  .btn-test {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  /* input group */
+  .input-wrapper .input-icon {
+    font-size: 1rem;
+    right: 14px;
+  }
+
+  .input-group input,
+  .input-wrapper input {
+    padding: 12px 44px 12px 14px !important;
+    font-size: 0.95rem;
+  }
+
+  .btn-add {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    min-width: 100%;
+  }
+
+  /* نوار ابزار - دکمه‌ها یکنواخت */
+  .toolbar {
+    padding: 12px 0;
+    margin-bottom: 16px;
+  }
+
+  .toolbar-left {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .toolbar-right {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .btn-tool {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .btn-tool-text {
+    display: inline;
+  }
+
+  /* کارت کلمه - چیدمان بهتر */
+  .word-main {
+    padding: 12px 12px;
+    gap: 8px;
+  }
+
+  .word-main .word-text {
+    font-size: 1rem;
+    padding: 0;
+    order: 1;
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .word-main .meaning-text {
+    padding: 8px 12px;
+    font-size: 0.92rem;
+    min-width: 0;
+    flex: 1 1 100%;
+    order: 2;
+  }
+
+  .word-main .sentence-badge {
+    order: 3;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .word-actions {
+    order: 4;
+    flex: 1;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+
+  /* جمله‌ها */
+  .sentences-container.open {
+    padding: 8px;
+    max-height: 600px;
+  }
+
+  .sentences-header {
+    padding: 4px 6px;
+    margin-bottom: 6px;
+  }
+
+  .sentence-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .sentence-item .sentence-text {
+    font-size: 0.88rem;
+    padding: 6px 8px;
+    background: #fafafa;
+    border-radius: 6px;
+  }
+
+  .sentence-item .sentence-meaning {
+    font-size: 0.88rem;
+    padding: 6px 8px;
+  }
+
+  .sentence-actions {
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .btn-icon-sm {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+    background: #f5f5f5;
+  }
+
+  /* Modal */
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-content {
+    max-height: 92vh;
+    border-radius: var(--radius);
+  }
+
+  .modal-header {
+    padding: 14px 18px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 18px;
+  }
+
+  .detail-section {
+    margin-bottom: 16px;
+  }
+
+  .detail-label {
+    font-size: 0.85rem;
+  }
+
+  .detail-word-display,
+  .detail-meaning-display {
+    padding: 10px 14px;
+    font-size: 1rem;
+  }
+
+  .detail-input {
+    padding: 11px 14px;
+    font-size: 0.95rem;
+  }
+
+  .modal-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    flex: 1;
+    padding: 11px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+/* موبایل‌های کوچک */
+@media (max-width: 400px) {
+  .app-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .header-icon {
+    font-size: 2.2rem;
+  }
+
+  .toolbar-right {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-tool-text {
+    display: inline;
+  }
+
+  .word-main .word-text {
+    font-size: 0.95rem;
+  }
+
+  .word-main .meaning-text {
+    font-size: 0.88rem;
+  }
+}
+
+/* حالت لمسی */
+@media (hover: none) {
+  .word-main:hover {
+    background: transparent;
+  }
+  
+  .btn-icon:active,
+  .btn-icon-sm:active {
+    background: var(--primary-bg);
+  }
+  
+  .btn-tool:active {
+    background: var(--primary-bg);
+    border-color: var(--primary-light);
+  }
+}
+
+/* انیمیشن ورود کارت‌ها */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.word-card {
+  animation: slideIn 0.2s ease-out;
+}
