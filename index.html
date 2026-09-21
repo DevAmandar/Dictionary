@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دیکشنری شخصی من</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <header class="app-header">
+            <h1>📚 دیکشنری شخصی</h1>
+            <p class="subtitle">کلمات خود را ذخیره و مدیریت کنید</p>
+        </header>
+        
+        <!-- بخش تنظیمات صدا -->
+        <div class="settings-bar">
+            <div class="setting-item">
+                <label>🎙️ نوع صدا</label>
+                <select id="voiceType">
+                    <option value="google">گوگل (آنلاین)</option>
+                    <option value="system">سیستم (آفلاین)</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label>⚡ سرعت</label>
+                <select id="voiceSpeed">
+                    <option value="0.5">آهسته</option>
+                    <option value="0.8" selected>معمولی</option>
+                    <option value="1.2">تند</option>
+                </select>
+            </div>
+            
+            <button id="testVoice" class="btn-test">🔊 تست صدا</button>
+        </div>
+        
+        <!-- بخش افزودن کلمه جدید -->
+        <div class="add-word-section">
+            <div class="input-group">
+                <input type="text" id="wordInput" placeholder="کلمه جدید..." autocomplete="off">
+                <input type="text" id="meaningInput" placeholder="ترجمه..." autocomplete="off">
+                <button id="addBtn" class="btn-add">
+                    <span>➕</span> افزودن
+                </button>
+            </div>
+        </div>
+        
+        <!-- نوار ابزار -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <span class="word-count" id="wordCount">۰ کلمه</span>
+            </div>
+            <div class="toolbar-right">
+                <button id="showStarredBtn" class="btn-tool">
+                    ⭐ نشان‌دارها <span id="starredCount" class="badge">۰</span>
+                </button>
+                <button id="exportBtn" class="btn-tool">📥 خروجی</button>
+                <button id="importBtn" class="btn-tool">📤 ورودی</button>
+                <input type="file" id="importInput" accept=".json" style="display: none;">
+                <button id="clearAllBtn" class="btn-tool btn-danger">🗑️ حذف همه</button>
+            </div>
+        </div>
+        
+        <!-- لیست کلمات -->
+        <div class="words-list" id="listContainer">
+            <!-- کلمات اینجا رندر می‌شوند -->
+        </div>
+        
+        <!-- حالت خالی -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📝</div>
+            <h3>هنوز کلمه‌ای اضافه نکرده‌اید</h3>
+            <p>از بخش بالا کلمه و ترجمه آن را وارد کنید</p>
+        </div>
+    </div>
+    
+    <!-- Modal افزودن/ویرایش جمله -->
+    <div id="sentenceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">📖 افزودن جمله برای کلمه</h2>
+                <button class="close-modal" id="closeSentenceModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <label class="detail-label">کلمه</label>
+                    <div class="detail-word-display" id="modalWordDisplay"></div>
+                </div>
+                
+                <div class="detail-section">
+                    <label class="detail-label">ترجمه کلمه</label>
+                    <div class="detail-meaning-display" id="modalMeaningDisplay"></div>
+                </div>
+                
+                <div class="detail-section">
+                    <label class="detail-label" for="sentenceInput">📝 جمله مثال</label>
+                    <input type="text" id="sentenceInput" placeholder="یک جمله مثال بنویسید..." class="detail-input">
+                </div>
+                
+                <div class="detail-section">
+                    <label class="detail-label" for="sentenceMeaningInput">🔤 ترجمه جمله</label>
+                    <input type="text" id="sentenceMeaningInput" placeholder="ترجمه جمله مثال..." class="detail-input">
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="saveSentence" class="btn-save">💾 ذخیره</button>
+                    <button id="cancelSentence" class="btn-cancel">انصراف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal کلمات نشان‌دار -->
+    <div id="starredModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⭐ کلمات نشان‌دار شده</h2>
+                <button class="close-modal" id="closeStarredModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="starredList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="./app.js"></script>
+</body>
+</html>

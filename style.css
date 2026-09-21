@@ -1,0 +1,878 @@
+/* style.css */
+
+/* --- متغیرهای رنگی --- */
+:root {
+  --primary: #6c5ce7;
+  --primary-hover: #5b4cdb;
+  --primary-light: #a29bfe;
+  --primary-bg: #f0edff;
+  --danger: #e74c3c;
+  --danger-hover: #c0392b;
+  --danger-bg: #ffeaea;
+  --success: #27ae60;
+  --success-bg: #e8f8ef;
+  --warning: #f39c12;
+  --warning-bg: #fff8e7;
+  --info: #0984e3;
+  --info-bg: #e8f4fd;
+  --bg: #f8f9fb;
+  --card: #ffffff;
+  --text: #2d3436;
+  --text-secondary: #636e72;
+  --text-muted: #b2bec3;
+  --border: #e0e4e8;
+  --border-light: #f0f2f5;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --transition: all 0.15s ease;
+}
+
+/* --- ریست و تنظیمات پایه --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Vazirmatn', 'Tahoma', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  padding: 20px;
+  direction: rtl;
+}
+
+/* --- کانتینر اصلی --- */
+.container {
+  max-width: 850px;
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--primary), #764ba2);
+}
+
+/* --- هدر --- */
+.app-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+/* --- نوار تنظیمات صدا --- */
+.settings-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #667eea10, #764ba210);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  border: 1px solid var(--border-light);
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setting-item label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.setting-item select {
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--card);
+  transition: var(--transition);
+}
+
+.setting-item select:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.btn-test {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-right: auto;
+}
+
+.btn-test:hover {
+  background: var(--primary-hover);
+}
+
+/* --- بخش افزودن کلمه --- */
+.add-word-section {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.input-group input {
+  flex: 1;
+  min-width: 150px;
+  padding: 14px 18px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--transition);
+  background: var(--card);
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+}
+
+.input-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-add {
+  padding: 14px 24px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  min-width: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-add:hover {
+  background: var(--primary-hover);
+}
+
+/* --- نوار ابزار --- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word-count {
+  background: var(--primary-bg);
+  color: var(--primary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-tool {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-tool:hover {
+  border-color: var(--primary-light);
+  background: var(--primary-bg);
+}
+
+.btn-tool.btn-danger {
+  border-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.btn-tool.btn-danger:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+.badge {
+  background: var(--warning);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
+/* ==================== لیست کلمات ==================== */
+.words-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- کارت کلمه --- */
+.word-card {
+  background: var(--card);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.word-card:hover {
+  border-color: var(--primary-light);
+}
+
+.word-card.starred {
+  border-right: 4px solid var(--warning);
+}
+
+/* --- بخش اصلی کلمه --- */
+.word-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.word-main:hover {
+  background: #fafafa;
+}
+
+.word-main .word-text {
+  flex: 1;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  min-width: 100px;
+}
+
+.word-main .meaning-text {
+  flex: 1.5;
+  color: var(--primary);
+  font-weight: 500;
+  padding: 6px 12px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: var(--transition);
+  min-width: 120px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.word-main .meaning-text.hidden {
+  color: var(--text-muted);
+  background: #f5f5f5;
+  letter-spacing: 3px;
+}
+
+.word-main .sentence-badge {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  background: #f0f0f0;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.word-main .sentence-badge.has-sentence {
+  background: var(--info-bg);
+  color: var(--info);
+  font-weight: 600;
+}
+
+.word-main .sentence-badge:hover {
+  background: #dceefb;
+}
+
+.word-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: #f0f0f0;
+}
+
+.btn-icon.star-btn {
+  font-size: 1.2rem;
+}
+
+.btn-icon.star-btn:hover {
+  background: var(--warning-bg);
+}
+
+.btn-icon.speak-btn:hover {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.btn-icon.delete-btn:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.btn-icon.expand-btn {
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-icon.expand-btn.expanded {
+  transform: rotate(180deg);
+}
+
+/* ==================== بخش جمله‌ها (زیرمجموعه) ==================== */
+.sentences-container {
+  border-top: 1px solid var(--border-light);
+  background: #fafbfc;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, padding 0.25s ease;
+}
+
+.sentences-container.open {
+  max-height: 500px;
+  padding: 10px;
+}
+
+.sentences-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.sentences-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-add-sentence {
+  padding: 5px 12px;
+  background: var(--info);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-add-sentence:hover {
+  background: #0773c5;
+}
+
+/* --- آیتم جمله --- */
+.sentence-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  transition: border-color 0.15s ease;
+}
+
+.sentence-item:hover {
+  border-color: var(--border);
+}
+
+.sentence-item .sentence-text {
+  flex: 2;
+  font-style: italic;
+  color: #555;
+  font-size: 0.9rem;
+  text-align: right;
+  padding: 4px 8px;
+}
+
+.sentence-item .sentence-meaning {
+  flex: 1.5;
+  color: var(--success);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  background: var(--success-bg);
+  border-radius: 6px;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sentence-item .sentence-meaning.hidden {
+  color: var(--text-muted);
+  background: #f5f5f5;
+  letter-spacing: 2px;
+}
+
+.sentence-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.btn-icon-sm {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-sm:hover {
+  background: #f0f0f0;
+}
+
+.btn-icon-sm.speak-btn:hover {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.btn-icon-sm.toggle-btn:hover {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.btn-icon-sm.delete-btn:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* --- پیام خالی جمله --- */
+.no-sentences {
+  text-align: center;
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ==================== حالت خالی ==================== */
+.empty-state {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state.visible {
+  display: block;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ==================== MODALS ==================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 550px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 25px;
+  border-bottom: 2px solid var(--border-light);
+  background: linear-gradient(135deg, #f8f9fb, var(--card));
+}
+
+.modal-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: var(--transition);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-modal:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.modal-body {
+  padding: 25px;
+  overflow-y: auto;
+  max-height: calc(85vh - 80px);
+}
+
+/* --- بخش‌های جزئیات --- */
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.detail-word-display,
+.detail-meaning-display {
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  border: 1px solid var(--border-light);
+}
+
+.detail-meaning-display {
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.detail-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.detail-input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+  justify-content: flex-end;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.btn-save {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-save:hover {
+  background: var(--primary-hover);
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: var(--text-secondary);
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+/* --- استایل آیتم‌ها در مودال نشان‌دارها --- */
+#starredList .word-card {
+  border-color: var(--warning-bg);
+}
+
+/* ==================== ریسپانسیو ==================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 15px;
+    border-radius: var(--radius);
+  }
+  
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .settings-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .setting-item {
+    width: 100%;
+  }
+  
+  .setting-item select {
+    flex: 1;
+    width: 100%;
+  }
+  
+  .btn-test {
+    margin-right: 0;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .input-group {
+    flex-direction: column;
+  }
+  
+  .input-group input {
+    width: 100%;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .toolbar-left,
+  .toolbar-right {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .toolbar-right {
+    flex-wrap: wrap;
+  }
+  
+  .btn-tool {
+    flex: 1;
+    text-align: center;
+    min-width: 80px;
+  }
+  
+  .word-main {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .word-main .word-text,
+  .word-main .meaning-text {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .word-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .sentence-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 10px;
+  }
+  
+  .sentence-item .sentence-text,
+  .sentence-item .sentence-meaning {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .sentence-actions {
+    justify-content: center;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    margin: 10px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* --- اسکرول‌بار --- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
+}
